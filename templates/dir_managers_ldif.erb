@@ -1,0 +1,38 @@
+dn: cn=puppetlabsACISubentry,dc=puppetlabs,dc=net
+changetype: modify
+add: prescriptiveACI
+prescriptiveACI: {
+    identificationTag "directoryManagerFullAccessACI",
+    precedence 20,
+    authenticationLevel simple,
+    itemOrUserFirst userFirst:
+    {
+      userClasses
+      {
+        name
+        {
+          "uid=adrien,ou=people,dc=puppetlabs,dc=net",
+          "uid=ben,ou=people,dc=puppetlabs,dc=net",
+          "uid=cody,ou=people,dc=puppetlabs,dc=net",
+          "uid=james,ou=people,dc=puppetlabs,dc=net",
+          "uid=zach,ou=people,dc=puppetlabs,dc=net"
+        }
+      },
+      userPermissions
+      {
+        {
+          protectedItems
+          {
+            entry, allUserAttributeTypesAndValues
+          },
+          grantsAndDenials
+          {
+            grantAdd, grantDiscloseOnError, grantRead,
+            grantRemove, grantBrowse, grantExport, grantImport,
+            grantModify, grantRename, grantReturnDN,
+            grantCompare, grantFilterMatch, grantInvoke
+          }
+        }
+      }
+    }
+  }

@@ -28,7 +28,7 @@
                            replicaId="1"
                            workingDirectory="example.com"
                            allowAnonymousAccess="true"
-                           accessControlEnabled="false"
+                           accessControlEnabled="true"
                            denormalizeOpAttrsEnabled="false"
                            syncPeriodMillis="15000"
                            maxPDUSize="2000000">
@@ -98,9 +98,9 @@
             ldap://ldap1.acme.com:10389/ou=data,dc=acme,dc=com?*, +?sub?(objectClass=*)
           </url>
           <connection bindMethod="simple">
-            <principal> 
-              uid=admin,ou=system 
-            </principal> 
+            <principal>
+              uid=admin,ou=system
+            </principal>
             <credentials>secret</credentials>
           </bind>
         </provider>
@@ -109,9 +109,9 @@
             ldaps://ldap2.acme.com:10389/ou=data,dc=acme,dc=com?*, +?sub?(objectClass=*)
           </url>
           <connection bindMethod="simple">
-            <principal> 
-              uid=admin,ou=system 
-            </principal> 
+            <principal>
+              uid=admin,ou=system
+            </principal>
             <credentials>secret</credentials>
           </bind>
         </provider>
@@ -121,7 +121,7 @@
   </defaultDirectoryService>
 
 
-  <!-- 
+  <!--
   +============================================================+
   | ChangePassword server configuration                        |
   +============================================================+
@@ -136,7 +136,7 @@
   </changePasswordServer>
 -->
 
-  <!-- 
+  <!--
   +============================================================+
   | Kerberos server configuration                              |
   +============================================================+
@@ -151,7 +151,7 @@
   </kdcServer>
 -->
 
-  <!-- 
+  <!--
   +============================================================+
   | NtpServer configuration                                    |
   +============================================================+
@@ -163,7 +163,7 @@
     </transports>
   </ntpServer-->
 
-  <!-- 
+  <!--
   +============================================================+
   | DnsServer configuration                                    |
   +============================================================+
@@ -178,7 +178,7 @@
   </dnsServer>
 -->
 
-  <!-- 
+  <!--
   +============================================================+
   | LDAP Service configuration                                 |
   +============================================================+
@@ -193,7 +193,7 @@
             maxSizeLimit="1000">
     <transports>
       <tcpTransport address="0.0.0.0" port="10389" nbThreads="8" backLog="50" enableSSL="false"/>
-      <tcpTransport address="localhost" port="10636" enableSSL="true"/>
+      <tcpTransport address="0.0.0.0" port="10636" enableSSL="true"/>
     </transports>
 
     <directoryService>#directoryService</directoryService>
@@ -232,7 +232,7 @@
        This can be used to provide access to the data present in DIT via http
        using a web application
   -->
-  <!-- 
+  <!--
    <httpServer id="httpServer" port="7009" >
    <webApps>
     <webApp warFile="/path/to/war/file" contextPath="/myApp"/>

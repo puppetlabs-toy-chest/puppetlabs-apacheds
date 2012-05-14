@@ -1,0 +1,23 @@
+dn: cn=puppetlabsACISubentry,dc=puppetlabs,dc=net
+changetype: modify
+add: prescriptiveACI
+prescriptiveACI: {
+    identificationTag "allowSelfAccessAndModification",
+    precedence 11,
+    authenticationLevel simple,
+    itemOrUserFirst userFirst:
+    {
+     userClasses { thisEntry },
+     userPermissions
+     {
+       {
+         protectedItems { entry },
+         grantsAndDenials { grantModify, grantBrowse, grantRead }
+       },
+       {
+         protectedItems { allAttributeValues { userPassword } },
+         grantsAndDenials { grantAdd, grantRemove }
+       }
+     }
+   }
+ }
