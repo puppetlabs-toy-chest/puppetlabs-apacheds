@@ -191,12 +191,8 @@
             searchBaseDn="ou=users,ou=system"
             maxTimeLimit="15000"
             maxSizeLimit="1000">
-            <!--
-            keystoreFile="/var/lib/apacheds-1.5.7/default/conf/puppetlabs.ks"
-            certificatePassword="secret"
-            -->
     <transports>
-      <tcpTransport address="0.0.0.0" port="10389" nbThreads="8" backLog="50" enableSSL="true"/>
+      <tcpTransport address="0.0.0.0" port="10389" nbThreads="8" backLog="50" enableSSL="false"/>
       <tcpTransport address="localhost" port="10636" enableSSL="true"/>
     </transports>
 

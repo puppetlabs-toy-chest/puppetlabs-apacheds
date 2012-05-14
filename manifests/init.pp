@@ -36,15 +36,15 @@
 # Copyright 2011 Your name here, unless otherwise noted.
 #
 class apacheds(
-  $rootpw = hiera('apacheds::rootpw'),
-  $server = hiera('apacheds::server'),
+  $rootpw = 'foobar',
+  $server = 'ldap-module.vm.vmware',
   $port   = '10389',
 ) {
 
   class { 'java': distribution => 'jre' }
 
   package { 'apacheds':
-    ensure  => present,
+    ensure  => '1.5.7',
     require => Class['java'],
   }
 
@@ -76,23 +76,23 @@ class apacheds(
 
   # Now to change the default password.
   exec { 'update password':
-    command => "echo ${rootpw_ldif} | ldapmodify -ZZ -D uid=admin,ou=system -h ${server}:${port} -x -w secret",
-    onlyif  => "ldapsearch -ZZ -D uid=admin,ou=system -LLL -h ${server}:${port} -x -w secret -b ou=system ou=system",
+    command => "echo '${rootpw_ldif}' | ldapmodify -ZZ -D uid=admin,ou=system -H ldap://${server}:${port} -x -w secret",
+    onlyif  => "ldapsearch -ZZ -D uid=admin,ou=system -LLL -H ldap://${server}:${port} -x -w secret -b ou=system ou=system",
     path    => [ '/bin', '/usr/bin' ],
     require => Package['apacheds'],
   }
 
   # Turn on specific schemas
   exec { 'turn on schemas':
-    command => "echo ${schema_ldif} | ldapmodify -ZZ -D uid=admin,ou=system -h ${server}:${port} -x -w ${rootpw}",
-    onlyif  => "ldapsearch -ZZ -LLL -h ${server}:${port} -b ou=schema cn=nis m-disabled | grep TRUE",
+    command => "echo '${schema_ldif}' | ldapmodify -ZZ -D uid=admin,ou=system -H ldap://${server}:${port} -x -w ${rootpw}",
+    onlyif  => "ldapsearch -ZZ -LLL -H ldap://${server}:${port} -x -b ou=schema cn=nis m-disabled | grep TRUE",
     path    => [ '/bin', '/usr/bin' ],
     require => Exec['update password'],
   }
 
   exec { 'add context':
-    command => "echo ${pl_context_ldif} | ldapadd -ZZ -D uid=admin,ou=system -h ${server}:${port} -x -w ${rootpw}",
-    onlyif  => "ldapsearch -ZZ -D uid=admin,ou=system -LLL -h ${server}:${port} -x -w secret -b dc=puppetlabs,dc=net dc=puppetlabs,dc=net",
+    command => "echo '${pl_context_ldif}' | ldapadd -ZZ -D uid=admin,ou=system -H ldap://${server}:${port} -x -w ${rootpw}",
+    unless  => "ldapsearch -ZZ -D uid=admin,ou=system -LLL -H ldap://${server}:${port} -x -w ${rootpw} -b dc=puppetlabs,dc=net dc=puppetlabs,dc=net",
     path    => [ '/bin', '/usr/bin' ],
     require => Exec['update password'],
   }
