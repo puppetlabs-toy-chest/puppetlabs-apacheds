@@ -1,1 +1,1 @@
-include apacheds
+class { 'apacheds': master => true' }
