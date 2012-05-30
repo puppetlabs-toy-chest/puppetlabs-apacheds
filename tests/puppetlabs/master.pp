@@ -13,43 +13,44 @@ class service::ldap::master(
   Ads_entry {
     admin_dn         => $admin_dn,
     admin_pw         => $admin_pw,
-    admin_default_pw => $admin_default_pw,
     server           => $server,
-    port             => $port,
   }
 
-  ads_entry { 'uid=admin':
+  ads_entry { 'uid=admin,ou=system':
     ensure     => present,
     attributes => { 'userPassword' => $admin_pw },
     require    => Class['apacheds'],
+  }
+
+  ads_entry { 'cn=nis,ou=schema':
+    ensure => present,
+    attributes => [ 'm-disabled' => 'FALSE' ],
+    require    => Ads_entry['uid=admin,ou=system'],
   }
 
   ads_entry { 'dc=puppetlabs,dc=net':
     ensure       => present,
     objectclass  => [ 'dcObject', 'top', 'organization', 'administrativeRole' ],
     attributes   => { 'o' => 'Puppet Labs', 'administrativeRole' => 'accessControlSpecificArea' },
-    require      => Ads_entry['uid=admin'],
+    require      => Ads_entry[[ 'uid=admin,ou=system', 'cn=nis,ou=schema' ]],
   }
 
-  ads_entry { 'ou=people':
+  ads_entry { 'ou=people,dc=puppetlabs,dc=net':
     ensure       => present,
-    base         => 'dc=puppetlabs,dc=net',
     objectclass  => [ 'dcObject', 'top', 'organizationalUnit' ],
     attributes   => { 'ou' => 'people',  },
     require      => Ads_entry['dc=puppetlabs,dc=net'],
   }
 
-  ads_entry { 'ou=group':
+  ads_entry { 'ou=group,dc=puppetlabs,dc=net':
     ensure       => present,
-    base         => 'dc=puppetlabs,dc=net',
     objectclass  => [ 'top', 'organizationalUnit' ],
     attributes   => { 'ou' => 'group', },
     require      => Ads_entry['dc=puppetlabs,dc=net'],
   }
 
-  ads_entry { 'ou=automount':
+  ads_entry { 'ou=automount,dc=puppetlabs,dc=net':
     ensure       => present,
-    base         => 'dc=puppetlabs,dc=net',
     objectclass  => [ 'top', 'organizationalUnit' ],
     attributes   => { 'ou' => 'automount', },
     require      => Ads_entry['dc=puppetlabs,dc=net'],
@@ -59,9 +60,8 @@ class service::ldap::master(
   $default_all_users = template("${module_name}/default_all_users_ldif.erb")
   $self_access = template("${module_name}/self_acces_ldif.erb")
 
-  ads_entry { 'cn=puppetlabsACISubentry':
+  ads_entry { 'cn=puppetlabsACISubentry,dc=puppetlabs,dc=net':
     ensure      => present,
-    base        => 'dc=puppetlabs,dc=net',
     objectclass => [ 'accessControlSubentry', 'top', 'subentry' ],
     attributes  => {
       'cn'              => 'puppetlabsACISubentry',

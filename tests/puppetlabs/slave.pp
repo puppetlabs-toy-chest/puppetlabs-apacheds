@@ -18,16 +18,22 @@ class service::ldap::slave(
     port             => $port,
   }
 
-  ads_entry { 'uid=admin':
+  ads_entry { 'uid=admin,ou=system':
     ensure     => present,
     attributes => { 'userPassword' => $admin_pw },
     require    => Class['apacheds'],
+  }
+
+  ads_entry { 'cn=nis,ou=schema':
+    ensure => present,
+    attributes => [ 'm-disabled' => 'FALSE' ],
+    require    => Ads_entry['uid=admin,ou=system'],
   }
 
   ads_entry { 'dc=puppetlabs,dc=net':
     ensure      => present,
     objectclass => [ 'dcObject', 'top', 'organization', 'administrativeRole' ],
     attributes  => { 'o' => 'Puppet Labs', 'administrativeRole' => 'accessControlSpecificArea' },
-    require     => Ads_entry['uid=admin'],
+    require     => Ads_entry['uid=admin,ou=system'],
   }
 }
